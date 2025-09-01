@@ -22,7 +22,7 @@ go build -o gospeed .
 
 # Expected Output
 
-<img width="685" height="221" alt="Screenshot_20250820_201418" src="https://github.com/user-attachments/assets/683645c8-65ce-46da-b807-be0fe2322c56" />
+<img width="654" height="218" alt="Screenshot_20250901_000710" src="https://github.com/user-attachments/assets/0669a575-7e80-44f7-a022-282dbdce958b" />
 
 
 
