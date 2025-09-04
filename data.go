@@ -127,7 +127,7 @@ func testAES() {
 	}
 	result := runAES(sizes, file)
 
-	fmt.Println("Size (bytes) | Write (MB/s) | Read (MB/s) | Latency (ms)")
+	fmt.Println("Size (MegaBytes) | Write (MB/s) | Read (MB/s) | Latency (ms)")
 	for _, r := range result {
 		fmt.Printf("%-13d | %-12.2f | %-11.2f | %-12.2f\n",
 			r.Size,
