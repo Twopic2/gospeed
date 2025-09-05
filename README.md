@@ -8,7 +8,7 @@ Gospeed is designed to benchmark the performance of AES-256-GCM encryption for f
 
 ## Prerequisites 
 
-- Go 1.22 or later (latest version recommended)
+- Go 1.23 or later (latest version recommended)
 - CPU with AES-NI instruction set support _non-aes or softwware based encryption methods will be implemented in the future._ 
 
 ## Installation
@@ -22,8 +22,7 @@ go build -o gospeed .
 
 # Expected Output
 
-<img width="654" height="218" alt="Screenshot_20250901_000710" src="https://github.com/user-attachments/assets/0669a575-7e80-44f7-a022-282dbdce958b" />
-
+<img width="625" height="226" alt="Screenshot 2025-09-04 at 6 23 20 PM" src="https://github.com/user-attachments/assets/81ff6c31-ee41-488b-913d-1ac3c4ce6fb8" />
 
 
 ## Encryption Details
