@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"strings"
 	"sync"
 	"time"
 )
@@ -21,8 +22,8 @@ type Result struct {
 type megaByte int
 
 const (
-	megaByteF       float64  = 1024 * 1024
-	regular         megaByte = 1024 * 1024
+	megaByteFloat   float64  = 1024 * 1024
+	megaByteInt     megaByte = 1024 * 1024
 	tenMegabyte     megaByte = 10 * 1024 * 1024
 	hundredMegabyte megaByte = 100 * 1024 * 1024
 	gigaByte        megaByte = 1000 * 1024 * 1024
@@ -93,8 +94,8 @@ func runAES(sizes []int, filename string) []Result {
 			}
 		}
 
-		writeThroughput := float64(size) / totalWriteTime.Seconds() / megaByteF
-		readThroughput := float64(size) / totalReadTime.Seconds() / megaByteF
+		writeThroughput := float64(size) / totalWriteTime.Seconds() / megaByteFloat
+		readThroughput := float64(size) / totalReadTime.Seconds() / megaByteFloat
 
 		if totalWriteTime == 0 {
 			writeThroughput = 0
@@ -120,19 +121,37 @@ func testAES() {
 	file := "encryption_test.txt"
 	defer os.Remove(file)
 	sizes := []int{
-		int(regular),
+		int(megaByteInt),
 		int(tenMegabyte),
 		int(hundredMegabyte),
 		int(gigaByte),
 	}
 	result := runAES(sizes, file)
 
-	fmt.Println("Size (MegaBytes) | Write (MB/s) | Read (MB/s) | Latency (ms)")
+	header := fmt.Sprintf("%-12s | %-12s | %-11s | %-12s", "Size (MB)", "Write (MB/s)", "Read (MB/s)", "Latency (ms)")
+	separator := strings.Repeat("-", len(header))
+
+	fmt.Println(separator)
+	fmt.Println(header)
+	fmt.Println(separator)
+
 	for _, r := range result {
-		fmt.Printf("%-13d | %-12.2f | %-11.2f | %-12.2f\n",
-			r.Size,
+		sizeMB := r.Size / int(megaByteInt)
+		var sizeStr string
+		switch {
+		case sizeMB < 1.0:
+			sizeStr = fmt.Sprintf("%d", sizeMB)
+		case sizeMB < 10.0:
+			sizeStr = fmt.Sprintf("%d", sizeMB)
+		default:
+			sizeStr = fmt.Sprintf("%d", sizeMB)
+		}
+
+		fmt.Printf("%-12s | %-12.2f | %-11.2f | %-12.2f\n",
+			sizeStr,
 			r.WriteThroughput,
 			r.ReadThroughput,
 			float64(r.LatencyTime.Microseconds())/1000.0)
 	}
+	fmt.Println(separator)
 }
