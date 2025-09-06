@@ -45,29 +45,28 @@ func runAES(sizes []int, filename string) []Result {
 			continue
 		}
 
-		numWorkers := min(numCpus, 8)
-		coreChunks := spiltCores(data, numWorkers)
+		coreChunks := spiltCores(data, numCpus)
 
 		var wg sync.WaitGroup
-		writeResultsChannel := make(chan writeResults, numWorkers)
+		writeResultsChannel := make(chan writeResults, numCpus)
 
 		writeStart := time.Now()
-		for w := 0; w < numWorkers; w++ {
+		for w := 0; w < numCpus; w++ {
 			wg.Add(1)
 			go writeConcurrent(coreChunks[w], key, &wg, writeResultsChannel)
 		}
 		wg.Wait()
 		totalWriteTime := time.Since(writeStart)
 
-		for w := 0; w < numWorkers; w++ {
+		for w := 0; w < numCpus; w++ {
 			writeResult := <-writeResultsChannel
 			if writeResult.Error != nil {
 				fmt.Printf("Write error: %v\n", writeResult.Error)
 			}
 		}
 
-		readFiles := make([]string, numWorkers)
-		for w := 0; w < numWorkers; w++ {
+		readFiles := make([]string, numCpus)
+		for w := 0; w < numCpus; w++ {
 			readFiles[w] = fmt.Sprintf("%s_read_%d", filename, w)
 			_, _, err := write(coreChunks[w], key, readFiles[w])
 			if err != nil {
@@ -77,17 +76,17 @@ func runAES(sizes []int, filename string) []Result {
 			defer os.Remove(readFiles[w])
 		}
 
-		readResultsChannel := make(chan readResults, numWorkers)
+		readResultsChannel := make(chan readResults, numCpus)
 		readStart := time.Now()
 
-		for w := 0; w < numWorkers; w++ {
+		for w := 0; w < numCpus; w++ {
 			wg.Add(1)
 			go readConcurrent(readFiles[w], key, &wg, readResultsChannel)
 		}
 		wg.Wait()
 		totalReadTime := time.Since(readStart)
 
-		for w := 0; w < numWorkers; w++ {
+		for w := 0; w < numCpus; w++ {
 			readResult := <-readResultsChannel
 			if readResult.Error != nil {
 				fmt.Printf("Read error: %v\n", readResult.Error)
